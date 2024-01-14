@@ -1,6 +1,8 @@
 import { test, expect } from "@playwright/test";
 const LoginPage = require("..\\pages\\loginPage.js");
 const RegisterPage = require("..\\pages\\registerPage.js");
+const ProductPage = require("..\\pages\\productPage.js");
+const BasketPage = require("..\\pages\\basketPage.js");
 
 test("has title", async ({ page }) => {
   // Navigate to the home page
@@ -22,7 +24,7 @@ test("has announcement bar", async ({ page }) => {
 
 test("has correct link to 100 nights page", async ({ page }) => {
   await page.goto("./");
-  // Check if   
+  // Check if
   await page
     .locator(
       `//ul[@class='inline-list toolbar__menu']//a[contains(text(),'100 לילות')]`
@@ -38,37 +40,47 @@ test("account can be created for email with @ ", async ({ page }) => {
   const registerPage = new RegisterPage(page);
   const timestamp = new Date().getTime(); // Get current timestamp
   const uniqueEmail = `testuser_${timestamp}@example.com`;
-  console.log(uniqueEmail)
+  console.log(uniqueEmail);
   await registerPage.signin(uniqueEmail);
-
 });
 
 test("account can not be created with no email", async ({ page }) => {
   const registerPage = new RegisterPage(page);
-  const emptyEmail = ""
+  const emptyEmail = "";
   await registerPage.signin(emptyEmail);
   const errorElement = await page.locator("div.errors ul li").first();
   const errorText = await errorElement.textContent();
-  console.log('Error Message:', errorText);
-  // Assertion 
-  expect(errorText.trim()).toBe('שדה אימייל לא יכול להיות ריק.');
- 
+  console.log("Error Message:", errorText);
+  // Assertion
+  expect(errorText.trim()).toBe("שדה אימייל לא יכול להיות ריק.");
 });
 
 test("user can log in", async ({ page }) => {
   const loginPage = new LoginPage(page);
-  const email = "testkate22@gmail.com"
+  const email = "testkate22@gmail.com";
   await loginPage.login(email);
-
 });
 
 test("user can not log in with invalid password", async ({ page }) => {
   const loginPage = new LoginPage(page);
-  const email = "invalid@gmail.com"
+  const email = "invalid@gmail.com";
   await loginPage.login(email);
   const errorElement = await page.locator("div.errors ul li").first();
   const errorText = await errorElement.textContent();
-  console.log('Error Message:', errorText);
+  console.log("Error Message:", errorText);
   // Assertion for the test
-  expect(errorText.trim()).toBe('פרטי התחברות שגויים, נא לבדוק אם שם המשתמש ו/או הססמא תקינים.');
+  expect(errorText.trim()).toBe(
+    "פרטי התחברות שגויים, נא לבדוק אם שם המשתמש ו/או הססמא תקינים."
+  );
+});
+
+test("product can be added to basket", async ({ page }) => {
+  const url = "https://pandazzz.co.il/products/מזרן-פנדה-student";
+  const productPage = new ProductPage(page);
+  await productPage.navigateToProductpage(url);
+  await productPage.addToBasket();
+  const expectedProductName = "מזרן פנדה STUDENT";
+  const basketPage = new BasketPage(page);
+  const actualProductName = await basketPage.getProductName();
+  expect(actualProductName).toBe(expectedProductName);
 });
