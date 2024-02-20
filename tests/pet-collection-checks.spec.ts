@@ -102,7 +102,7 @@ test("check pet can be deleted", async ({ request }) => {
 
 test("check I can find pet by ID", async ({ request }) => {
   const issues = await request.get(
-    `https://petstore.swagger.io/v2/pet/2`,
+    `https://petstore.swagger.io/v2/pet/1`,
     {
       headers: {
         accept: "application/json",
@@ -112,13 +112,21 @@ test("check I can find pet by ID", async ({ request }) => {
   expect(issues.status()).toBe(200);
 });
 
-test("check I can update pet data by ID", async ({ request }) => {
+test("check I can update pet data by ID", async ({ page, request }) => {
+  const response = await page.evaluate(async () => {
+    const formData = new URLSearchParams();
+    formData.append('name', 'doggie');
+    formData.append('status', 'sold');
+  })
   const issues = await request.post(
-    `https://petstore.swagger.io/v2/pet/2`,
+    `https://petstore.swagger.io/v2/pet/1`,
     {
       headers: {
         accept: "application/json",
         "Content-Type": "application/x-www-form-urlencoded",
+      },
+      data: {
+        body:FormData
       },
     }
   );

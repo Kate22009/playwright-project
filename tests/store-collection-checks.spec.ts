@@ -30,6 +30,26 @@ test("check I can find pet by status", async ({ request }) => {
   expect(issues.status()).toBe(404);
 });
 
-//Delete purchase order by ID
+test("check I can delete purchase order by ID", async ({ request }) => {
+  const issues = await request.delete(
+    `https://petstore.swagger.io/v2/store/order/223`,
+    {
+      headers: {
+        accept: "application/json",
+      },
+    }
+  );
+  expect(issues.status()).toBe(404);
+});
 
-//Retirns pet invetories by status
+test("check I can return pet invetories by status", async ({ request }) => {
+  const issues = await request.get(
+    `https://petstore.swagger.io/v2/store/inventory`,
+    {
+      headers: {
+        accept: "application/json",
+      },
+    }
+  );
+  expect(issues.status()).toBe(200);
+});
